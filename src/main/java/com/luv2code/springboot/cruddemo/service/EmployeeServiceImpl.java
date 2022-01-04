@@ -1,43 +1,47 @@
 package com.luv2code.springboot.cruddemo.service;
 
-import com.luv2code.springboot.cruddemo.dao.EmployeeDAO;
+import com.luv2code.springboot.cruddemo.dao.EmployeeRepository;
 import com.luv2code.springboot.cruddemo.entity.Employee;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class EmployeeServiceImpl implements EmployeeService {
     @Autowired
-    @Qualifier("employeeDAOJpaImpl")
-    private EmployeeDAO  employeeDAO;
+    private EmployeeRepository employeeRepository;
 
     public EmployeeServiceImpl() {}
 
     @Override
-    @Transactional
     public List<Employee> findAll() {
-        return employeeDAO.findAll();
+        return employeeRepository.findAll();
     }
 
     @Override
-    @Transactional
     public Employee findById(int id) {
-        return employeeDAO.findById(id);
+        Optional<Employee> result = employeeRepository.findById(id);
+
+        Employee employee = null;
+
+        if (result.isPresent()) {
+            employee = result.get();
+        } else {
+            throw new RuntimeException("Did not find employee id - " + id);
+        }
+
+        return employee;
     }
 
     @Override
-    @Transactional
     public void save(Employee employee) {
-        employeeDAO.save(employee);
+        employeeRepository.save(employee);
     }
 
     @Override
-    @Transactional
     public void deleteById(int id) {
-        employeeDAO.deleteById(id);
+        employeeRepository.deleteById(id);
     }
 }
